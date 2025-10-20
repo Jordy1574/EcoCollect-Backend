@@ -17,4 +17,7 @@ public class Material {
     
     @Column(nullable = false)
     private Double precioPorKg; // Precio actual fijado por el Admin
+
+    @Column(nullable = false)
+    private String unidadMedida; // Ej: kg, g, lb
 }
