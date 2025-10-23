@@ -4,7 +4,11 @@ import com.upn.ecocollect.model.Material;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface MaterialRepository extends JpaRepository<Material, Long> {
-    // Aquí puede añadir métodos de búsqueda si los necesita, como buscar por nombre
+    Optional<Material> findByNombre(String nombre);
+    List<Material> findByNombreContainingIgnoreCase(String nombre);
 }

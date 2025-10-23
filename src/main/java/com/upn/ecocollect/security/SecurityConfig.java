@@ -35,7 +35,8 @@ public class SecurityConfig {
             
             // 4. Definición de las reglas de autorización
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/auth/**").permitAll() 
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN") // Solo ADMIN puede acceder
                 .anyRequest().authenticated()
             );
 
