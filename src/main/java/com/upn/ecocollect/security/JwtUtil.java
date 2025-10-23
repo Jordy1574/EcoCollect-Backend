@@ -28,5 +28,24 @@ public class JwtUtil {
                 .compact();
     }
     
-    // NOTA: El método para validar el token (validateToken) se implementará después.
+    // Extrae el email (subject) desde el token
+    public String getEmailFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    // Valida la integridad y expiración del token
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            // firmas inválidas, expirados, etc.
+            return false;
+        }
+    }
 }

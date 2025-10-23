@@ -35,7 +35,7 @@ public class AuthService {
     // ----------------------------------------------------------------------
     // 1. REGISTRO (Corregido existsByEmail y asignación de rol)
     // ----------------------------------------------------------------------
-    public Usuario registrarNuevoUsuario(RegistroRequest registroRequest) {
+    public com.upn.ecocollect.dto.AuthResponse registrarNuevoUsuario(RegistroRequest registroRequest) {
         
         // CORRECCIÓN 1: Usa existsByEmail()
         if (usuarioRepository.existsByEmail(registroRequest.getEmail())) {
@@ -52,14 +52,21 @@ public class AuthService {
         nuevoUsuario.setRol(RolUsuario.CLIENTE); // ¡Asegúrate que el rol sea un String en el modelo!
         
         nuevoUsuario.setPassword(passwordEncoder.encode(registroRequest.getPassword())); 
-        
-        return usuarioRepository.save(nuevoUsuario);
+        Usuario saved = usuarioRepository.save(nuevoUsuario);
+
+        // Generar token y refresh token para la nueva cuenta (opcional)
+        String token = jwtUtil.generateToken(saved.getEmail(), saved.getRol().name());
+        String refreshToken = java.util.UUID.randomUUID().toString();
+
+        // NOTE: refreshToken persistence is not implemented here. For production store it in DB.
+
+        return new com.upn.ecocollect.dto.AuthResponse(saved, token, refreshToken);
     }
     
     // ----------------------------------------------------------------------
     // 2. LOGIN (Corregido manejo de Optional y conversión de Rol a String)
     // ----------------------------------------------------------------------
-    public String autenticarUsuario(LoginRequest loginRequest) {
+    public com.upn.ecocollect.dto.AuthResponse autenticarUsuario(LoginRequest loginRequest) {
         try {
             // 1. Intenta autenticar
             Authentication authentication = authenticationManager.authenticate(
@@ -84,8 +91,13 @@ public class AuthService {
             
             String rolString = usuario.getRol().name(); // Asumiendo que getRol() devuelve String
             
-            // 4. Generar el JWT
-            return jwtUtil.generateToken(email, rolString);
+            // 4. Generar el JWT y refresh token
+            String token = jwtUtil.generateToken(email, rolString);
+            String refreshToken = java.util.UUID.randomUUID().toString();
+
+            // NOTE: refreshToken persistence is not implemented here. For production store it in DB.
+
+            return new com.upn.ecocollect.dto.AuthResponse(usuario, token, refreshToken);
 
         } catch (AuthenticationException e) {
             // Capturar error de autenticación (credenciales inválidas)
