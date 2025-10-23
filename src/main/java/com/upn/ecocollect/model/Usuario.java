@@ -1,5 +1,6 @@
 package com.upn.ecocollect.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data; // De la dependencia Lombok
 
@@ -20,6 +21,7 @@ public class Usuario {
     private String email; 
     
     @Column(nullable = false)
+    @JsonIgnore
     private String password; 
     
     @Column(nullable = false)
