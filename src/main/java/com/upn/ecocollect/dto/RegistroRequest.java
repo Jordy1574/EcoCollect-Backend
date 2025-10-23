@@ -23,4 +23,8 @@ public class RegistroRequest {
     
     private String telefono;
     private String direccion;
+
+    // Opcional: permitir que el frontend envíe "rol" para elegir entre CLIENTE o RECOLECTOR.
+    // ADMIN no será aceptado por seguridad en el endpoint de registro.
+    private String rol; // valores esperados: "CLIENTE" | "RECOLECTOR" (case-insensitive)
 }

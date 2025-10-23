@@ -48,8 +48,20 @@ public class AuthService {
         nuevoUsuario.setTelefono(registroRequest.getTelefono());
         nuevoUsuario.setDireccion(registroRequest.getDireccion());
         
-        // CORRECCIÓN 2: Asigna el rol por defecto (CLIENTE), no usa getRol() del DTO
-        nuevoUsuario.setRol(RolUsuario.CLIENTE); // ¡Asegúrate que el rol sea un String en el modelo!
+        // Rol: por defecto CLIENTE; si el DTO envía RECOLECTOR o CLIENTE, usarlo.
+        RolUsuario rolAsignado = RolUsuario.CLIENTE;
+        try {
+            String rolDto = registroRequest.getRol();
+            if (rolDto != null) {
+                RolUsuario rolReq = RolUsuario.valueOf(rolDto.toUpperCase());
+                if (rolReq == RolUsuario.RECOLECTOR || rolReq == RolUsuario.CLIENTE) {
+                    rolAsignado = rolReq;
+                }
+            }
+        } catch (IllegalArgumentException ignored) {
+            // Si envían un valor desconocido, mantener CLIENTE
+        }
+        nuevoUsuario.setRol(rolAsignado);
         
         nuevoUsuario.setPassword(passwordEncoder.encode(registroRequest.getPassword())); 
         Usuario saved = usuarioRepository.save(nuevoUsuario);
